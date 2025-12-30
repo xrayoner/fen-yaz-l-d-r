@@ -1,1 +1,0 @@
-# fen-yaz-l-d-r
