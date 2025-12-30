@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8. Sınıf Fen Bilimleri 1. Dönem 2. Yazılı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --accent1: #4facfe; /* light blue */
+            --accent2: #845ef7; /* purple */
+            --card-bg: rgba(255,255,255,0.95);
+            --muted: #6b6b6b;
+        }
+        html,body{height:100%;}
+        body { 
+            font-family: 'Inter', Inter, Arial, sans-serif; 
+            margin: 0; 
+            padding: 30px 16px; 
+            background: linear-gradient(135deg, var(--accent1), var(--accent2));
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-font-smoothing:antialiased;
+            color:#222;
+        }
+        .container{
+            max-width: 900px;
+            margin: 0 auto;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+            backdrop-filter: blur(6px);
+        }
+        h1 { text-align: center; color: #fff; margin-top: 0; text-shadow: 0 2px 8px rgba(0,0,0,0.35);} 
+
+        .meta{color: rgba(255,255,255,0.9); margin-bottom: 18px;}
+
+        .question { 
+            margin-bottom: 20px; 
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 6px 18px rgba(27,27,27,0.08);
+            transition: transform .35s ease, opacity .35s ease;
+        }
+        .question.hidden{ display: none; opacity: 0; transform: translateX(20px) scale(.99); }
+        .question.active{ display: block; opacity: 1; transform: none; }
+
+        .question label { display: block; font-weight: 700; color:#222; margin-bottom: 8px; }
+        .question textarea { width: 100%; min-height: 120px; resize: vertical; padding: 12px; border-radius: 8px; border: 1px solid #e6e6e6; font-size: 14px; }
+
+        .badge { display:inline-block; background: linear-gradient(90deg,var(--accent1),var(--accent2)); color:#fff; padding:6px 10px; border-radius: 999px; font-weight:700; margin-right:10px; box-shadow:0 4px 12px rgba(132,94,247,0.25);}
+
+        .nav { display:flex; gap:12px; align-items:center; justify-content:space-between; margin-top: 12px; }
+        .controls { display:flex; gap:10px; align-items:center; }
+        .btn{ padding: 9px 14px; border-radius:10px; border: none; cursor:pointer; background: rgba(0,0,0,0.06); color:#222; font-weight:600 }
+        .btn.small{ padding:6px 10px; font-size:14px }
+        .btn:disabled{ opacity: .45; cursor: not-allowed; }
+        .btn-primary{ background: linear-gradient(90deg,var(--accent1),var(--accent2)); color: #fff; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,0.12); }
+
+        #progressText{ color: var(--muted); font-weight:600 }
+
+        .result{ margin-top:10px; font-weight:700; display:block; }
+        .result.success{ color:#2e7d32; }
+        .result.error{ color:#c62828; }
+        .result.info{ color:#1565c0; }
+
+        #totalScore{ display:block; margin-top: 18px; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.08); color: #fff; font-weight:800; text-align:center; }
+
+        .small-correct{ font-size:13px; color:var(--muted); margin-top:6px; display:block }
+
+        /* Toast */
+        #toast{ position: fixed; right: 16px; bottom: 16px; background: rgba(0,0,0,0.8); color:#fff; padding:10px 14px; border-radius:8px; display:none; z-index:9999 }
+
+        /* Responsive */
+        @media (max-width: 720px){
+            .nav{ flex-direction:column; align-items:stretch }
+            .controls{ justify-content:space-between }
+            .btn{ width:100%; }
+            .controls .btn{ width:48%; }
+            .controls{ gap:8px }
+            .container{ padding:18px }
+        }
+
+        /* Print styles for PDF export */
+        @media print {
+            body { background: #fff; }
+            .nav, #toast { display:none !important }
+            .question{ page-break-inside: avoid }
+            .container{ box-shadow:none; }
+        }
+    </style>
+</head>
+<body>
+    <h1>8. Sınıf Fen Bilimleri 1. Dönem 2. Yazılı Sınavı</h1>
+    <p><strong>Adı Soyadı:</strong> ________________________</p>
+    <p><strong>Sınıfı:</strong> 8/__</p>
+    <p><strong>Numarası:</strong> _____</p>
+    <p><strong>Tarih:</strong> 30 Aralık 2025</p>
+    <p><strong>Not:</strong> Tüm sorular açık uçludur. Cevaplarınızı kısa ve öz bir şekilde açıklayınız. Her soru 10 puandır. Toplam 10 soru, 100 puan.</p>
+    <p><strong>Sınav Süresi:</strong> 40 dakika</p>
+    <p><strong>Başarılar!</strong></p>
+
+    <form id="examForm">
+        <div class="question">
+            <label>1. Mevsimler Konusu: Eksen eğikliğinin mevsimlerin oluşumundaki rolünü açıklayınız. Ayrıca, ekinoks tarihlerinde gece ve gündüz sürelerinin nasıl olduğunu belirtiniz.</label>
+            <textarea id="q1" name="q1"></textarea>
+            <div id="result1" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>2. Mevsimler Konusu: Güneş ışınlarının geliş açısının yarım kürelerdeki etkisi nedir? Yaz gün dönümünde Kuzey Yarımküre'de ne gibi değişiklikler olur, kısaca anlatınız.</label>
+            <textarea id="q2" name="q2"></textarea>
+            <div id="result2" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>3. Modifikasyon – Mutasyon Konusu: Modifikasyon ve mutasyon arasındaki farkı, çevre etkisi ve kalıtsallık açısından açıklayınız.</label>
+            <textarea id="q3" name="q3"></textarea>
+            <div id="result3" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>4. Modifikasyon – Mutasyon Konusu: Mutasyonun DNA, gen ve kromozom üzerindeki etkisini örnek vererek anlatınız.</label>
+            <textarea id="q4" name="q4"></textarea>
+            <div id="result4" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>5. Kalıtım Konusu: Alel gen, baskın gen ve çekinik gen kavramlarını tanımlayınız. Homozigot ve heterozigot genotiplerin fenotipe etkisini örnekle açıklayınız.</label>
+            <textarea id="q5" name="q5"></textarea>
+            <div id="result5" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>6. Kalıtım Konusu: Genotip ve fenotip arasındaki ilişkiyi, DNA ve kromozom yapısı ile bağlantılı olarak tarif ediniz.</label>
+            <textarea id="q6" name="q6"></textarea>
+            <div id="result6" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>7. Katı ve Sıvı Basıncı Konusu: Katı basıncının yüzey alanı ve kuvvet ile ilişkisini formülle birlikte açıklayınız. Bir örnek veriniz.</label>
+            <textarea id="q7" name="q7"></textarea>
+            <div id="result7" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>8. Katı ve Sıvı Basıncı Konusu: Sıvı basıncının derinlik ile nasıl değiştiğini belirtiniz. Basınç kavramını sıvılar için örnekle anlatınız.</label>
+            <textarea id="q8" name="q8"></textarea>
+            <div id="result8" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>9. Periyodik Tablo Konusu: Atom numarası, proton sayısı, elektron sayısı ve nötron sayısının periyodik tablodaki yerini açıklayınız. Bir elementin periyot ve grup konumuna göre metalik özelliklerini nasıl belirleriz?</label>
+            <textarea id="q9" name="q9"></textarea>
+            <div id="result9" class="result"></div>
+        </div>
+
+        <div class="question">
+            <label>10. Fiziksel – Kimyasal Değişim Konusu: Fiziksel değişim ve kimyasal değişim arasındaki farkı, hâl değişimi ve yeni madde oluşumu açısından örneklerle açıklayınız.</label>
+            <textarea id="q10" name="q10"></textarea>
+            <div id="result10" class="result"></div>
+        </div>
+
+        <div class="nav">
+            <div class="controls">
+                <button type="button" id="prevBtn" class="btn">◀️ Önceki</button>
+                <button type="button" id="nextBtn" class="btn">Sonraki ▶️</button>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <span id="progressText">Soru 1 / 10</span>
+                <button type="button" id="submitBtn" class="btn btn-primary">Sınavı Bitir ve Puanla</button>
+                <button type="button" id="saveBtn" class="btn small">Cevapları Kaydet</button>
+                <button type="button" id="exportCsvBtn" class="btn small" disabled>CSV Dışa Aktar</button>
+                <button type="button" id="exportPdfBtn" class="btn small" disabled>PDF Yazdır</button>
+            </div>
+        </div>
+        <div id="totalScore" class="result" style="margin-top: 20px; font-size: 18px; display:none;"></div>
+    </form>
+
+    <script>
+        const answers = [
+            "Eksen eğikliği, Dünya'nın Güneş etrafında dolanırken mevsimlerin oluşmasına neden olur; çünkü Güneş ışınlarının yarım kürelere farklı açılarda gelmesini sağlar. Ekinoks tarihlerinde (21 Mart ve 23 Eylül) gece ve gündüz süreleri eşit olur (12 saat).",
+            "Güneş ışınlarının geliş açısı yarım kürelerde sıcaklık farkı yaratır; dik gelen ışınlar daha fazla ısıtır. Yaz gün dönümünde (21 Haziran) Kuzey Yarımküre'de gündüz süresi en uzun, gece en kısa olur ve en sıcak mevsim başlar.",
+            "Modifikasyon, çevresel etkiyle oluşan ve kalıtsal olmayan değişikliklerdir (örneğin, güneş yanığı). Mutasyon ise DNA'da kalıcı değişiklikler olup kalıtsaldır ve nesillere aktarılır.",
+            "Mutasyon, DNA'daki gen veya kromozom yapısında değişiklik yaratır; örneğin, radyasyon etkisiyle gen mutasyonu hücre bölünmesini bozabilir ve kansere yol açabilir.",
+            "Alel gen: Aynı genin farklı formları. Baskın gen: Heterozigot durumda fenotipi belirler. Çekinik gen: Sadece homozigot durumda görünür. Homozigot (AA veya aa) saf, heterozigot (Aa) melezdir; örneğin Aa'da baskın A fenotipi gösterir.",
+            "Genotip bireyin genetik yapısıdır (DNA ve kromozomlardaki genler), fenotip ise gözlemlenen özelliklerdir. Genotip fenotipi belirler, ancak çevre etkileyebilir.",
+            "Katı basıncı = Kuvvet / Yüzey Alanı (P = F / A). Örnek: Dar bir topuklu ayakkabı zemine daha fazla basınç uygular çünkü yüzey alanı küçüktür.",
+            "Sıvı basıncı derinlikle artar (P = ρgh, ρ: yoğunluk, g: yerçekimi, h: derinlik). Örnek: Deniz dibinde basınç yüksektir, bu yüzden dalgıçlar özel ekipman kullanır.",
+            "Atom numarası = proton sayısı = elektron sayısı (nötr atomda). Nötron = kütle numarası - atom numarası. Periyot aşağı inildikçe atom yarıçapı artar, grup soldan sağa metalik özellik azalır (metaller solda, ametaller sağda).",
+            "Fiziksel değişim: Madde aynı kalır, sadece hâl değişir (örneğin, suyun buharlaşması). Kimyasal değişim: Yeni madde oluşur (örneğin, demirin paslanması)."
+        ];
+
+        // Genişletilmiş anahtar kelime setleri (her soru için birden fazla terim)
+        const keywords = [
+            ["eksen","eksen eğikliği","ekinok","ekinoks","21 mart","23 eylül","gündüz","gece","eşit"],
+            ["ışın","ışınların","açı","açıdan","geliş açısı","yaz","21 haziran","gündüz","uzun","sıcak"],
+            ["modifikasyon","modifikasyonlar","mutasyon","mutasyonlar","çevre","çevresel","kalıtsal değil","kalıtsal","iyi"],
+            ["dna","deoksiribonükleik","gen","genler","kromozom","radyasyon","mutasyon örneği","kanser"],
+            ["alel","baskın","çekinik","homozigot","heterozigot","fenotip","genotip"],
+            ["genotip","fenotip","dna","kromozom","kalıtım","çevre","etki"],
+            ["p =","p=f","kuvvet","yüzey","yüzey alanı","basınç","topuk","formül"],
+            ["p = ρgh","ρgh","derinlik","yoğunluk","basınç","dalgıç","sıvı basıncı","h"],
+            ["atom numarası","proton","elektron","nötron","kütle numarası","periyot","grup","metalik","yarıçap"],
+            ["fiziksel","kimyasal","hâl","hal","yeni madde","paslanma","buharlaşma","geri dönüşümlü"]
+        ];
+
+        const questionEls = document.querySelectorAll('.question');
+        let current = 0;
+        const total = questionEls.length;
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+        const exportPdfBtn = document.getElementById('exportPdfBtn');
+
+        const progressText = document.getElementById('progressText');
+        const totalScoreDiv = document.getElementById('totalScore');
+
+        function showQuestion(index){
+            questionEls.forEach((el,i)=>{
+                if(i===index){ el.classList.add('active'); el.classList.remove('hidden'); }
+                else{ el.classList.remove('active'); el.classList.add('hidden'); }
+            });
+            progressText.textContent = `Soru ${index+1} / ${total}`;
+            prevBtn.disabled = index===0;
+            nextBtn.disabled = index===total-1;
+        }
+
+        function uniqueMatches(answer, keys){
+            if(!answer) return [];
+            const matched = new Set();
+            for(const k of keys){
+                // normalize and simple contains check
+                if(answer.includes(k)) matched.add(k);
+            }
+            return Array.from(matched);
+        }
+
+        function gradeAll(){
+            let score = 0;
+            const breakdown = [];
+            for(let i=1;i<=total;i++){
+                const el = document.getElementById(`q${i}`);
+                const ansRaw = el.value.trim();
+                const ans = ansRaw.toLowerCase();
+                const resDiv = document.getElementById(`result${i}`);
+                resDiv.style.display = 'block';
+
+                if(ans.length < 8){
+                    resDiv.innerHTML = 'Eksik cevap veya boş. (0 Puan)';
+                    resDiv.className = 'result error';
+                    breakdown.push({q:i, answer: ansRaw, score:0, matches:[]});
+                    continue;
+                }
+
+                const matches = uniqueMatches(ans, keywords[i-1]);
+                const partial = Math.round((matches.length / keywords[i-1].length) * 10);
+                const qScore = Math.min(10, Math.max(0, partial));
+
+                if(qScore > 0){
+                    resDiv.innerHTML = `${qScore} Puan — Eşleşen anahtarlar: ${matches.join(', ')}`;
+                    resDiv.className = 'result success';
+                } else {
+                    resDiv.innerHTML = `0 Puan — <span class="small-correct">Doğru Cevap: ${answers[i-1]}</span>`;
+                    resDiv.className = 'result error';
+                }
+
+                score += qScore;
+                breakdown.push({q:i, answer: ansRaw, score:qScore, matches});
+            }
+
+            totalScoreDiv.style.display = 'block';
+            totalScoreDiv.textContent = `Toplam Puan: ${score}/${total*10}`;
+            // enable export buttons
+            exportCsvBtn.disabled = false;
+            exportPdfBtn.disabled = false;
+
+            totalScoreDiv.scrollIntoView({behavior:'smooth', block:'center'});
+            return {score, breakdown};
+        }
+
+        function saveDraft(){
+            const data = {};
+            for(let i=1;i<=total;i++) data[`q${i}`] = document.getElementById(`q${i}`).value;
+            localStorage.setItem('examDraft_v1', JSON.stringify({savedAt: Date.now(), data}));
+            showToast('Cevaplar kaydedildi.');
+        }
+
+        function loadDraft(){
+            try{
+                const raw = localStorage.getItem('examDraft_v1');
+                if(!raw) return;
+                const parsed = JSON.parse(raw);
+                const data = parsed.data || {};
+                for(let i=1;i<=total;i++){
+                    if(data[`q${i}`]) document.getElementById(`q${i}`).value = data[`q${i}`];
+                }
+                showToast('Kayıtlı cevaplar yüklendi.');
+            }catch(e){ console.warn('Draft load failed', e); }
+        }
+
+        function exportCSV(breakdown){
+            const header = ['Soru No','Cevap','Puan','Eşleşen Anahtarlar'];
+            const rows = [header];
+            breakdown.forEach(item=>{
+                const esc = (str) => '"' + String(str).replace(/"/g,'""') + '"';
+                rows.push([item.q, esc(item.answer), item.score, esc(item.matches.join(', '))]);
+            });
+            const csv = rows.map(r => r.join(',')).join('\n');
+            const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cevaplar_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showToast('CSV dışa aktarma tamamlandı.');
+        }
+
+        function exportPDF(breakdown, totalScore){
+            const w = window.open('', '_blank');
+            const title = `8. Sınıf - Yazılı - Cevaplar`;
+            const style = `<style>body{font-family:Inter, Arial; padding:20px; color:#222} h1{font-size:18px} table{width:100%; border-collapse:collapse} th,td{padding:8px; border:1px solid #ddd; text-align:left} .score{font-weight:700}</style>`;
+            let html = `<html><head><title>${title}</title>${style}</head><body><h1>${title}</h1><p>İhraç Tarihi: ${new Date().toLocaleString()}</p><table><thead><tr><th>Soru No</th><th>Cevap</th><th>Puan</th><th>Eşleşen Anahtarlar</th></tr></thead><tbody>`;
+            breakdown.forEach(b=>{
+                html += `<tr><td>${b.q}</td><td>${escapeHtml(b.answer)}</td><td class="score">${b.score}</td><td>${escapeHtml(b.matches.join(', '))}</td></tr>`;
+            });
+            html += `</tbody></table><p class="score">Toplam Puan: ${totalScore}/${total*10}</p></body></html>`;
+            w.document.write(html);
+            w.document.close();
+            w.focus();
+            // Allow the new window to render before print
+            setTimeout(()=>{ w.print(); }, 300);
+        }
+
+        function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+        function showToast(msg, timeout=2000){
+            let t = document.getElementById('toast');
+            if(!t){ t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+            t.textContent = msg; t.style.display = 'block';
+            setTimeout(()=>{ t.style.display = 'none'; }, timeout);
+        }
+
+        // Event listeners
+        prevBtn.addEventListener('click', ()=>{ if(current>0){ current--; showQuestion(current); } });
+        nextBtn.addEventListener('click', ()=>{ if(current<total-1){ current++; showQuestion(current); } });
+        submitBtn.addEventListener('click', ()=>{ if(confirm('Sınavı bitirmek ve puanlamak istiyor musunuz?')){ const {score, breakdown} = gradeAll(); /* keep results */ } });
+        saveBtn.addEventListener('click', saveDraft);
+        exportCsvBtn.addEventListener('click', ()=>{ const res = gradeAll(); exportCSV(res.breakdown); });
+        exportPdfBtn.addEventListener('click', ()=>{ const res = gradeAll(); exportPDF(res.breakdown, res.score); });
+
+        // keyboard shortcuts
+        document.addEventListener('keydown', (e)=>{
+            if(e.key === 'ArrowLeft') prevBtn.click();
+            if(e.key === 'ArrowRight') nextBtn.click();
+            if(e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitBtn.click();
+        });
+
+        // On load: attempt to load draft and show first question
+        loadDraft();
+        showQuestion(current);
+    </script>
+</body>
+</html>
